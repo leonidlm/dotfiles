@@ -1,0 +1,120 @@
+
+# Create a new directory and enter it
+function mk() {
+  mkdir -p "$@" && cd "$@"
+}
+
+# Connect by ssh with some handy ssh parameters,
+# The first argument is the private key to use for the connection.
+function sshc() {
+  ssh \
+		-o UserKnownHostsFile=/dev/null \
+		-o CheckHostIP=no \
+		-o StrictHostKeyChecking=no \
+		-i ~/.ssh/$1 "${@:2}"
+}
+
+# Present a human readable, sorted list of the files taking the most space
+# on a provided path.
+function ts() {
+	local search_path=${1:-\.}
+	local max_depth=${max_depth:-1}
+  sudo du -k --max-depth=$max_depth $search_path | \
+	sort -nr | \
+	awk ' BEGIN { split("KB,MB,GB,TB", Units, ","); } \
+		{ u = 1; while ($1 >= 1024) { $1 = $1 / 1024; u += 1 } \
+		$1 = sprintf("%.1f %s", $1, Units[u]); print $0; } '
+}
+
+# Remove all the merged branches locally and from the remote
+function gclean() {
+  git fetch
+  git remote prune origin
+
+  # Removing local merged branches
+  local branches=$(git branch --merged | \
+		grep -v "\*" | \
+		grep -v "master" | \
+		grep -v "staging")
+
+  for branch_name in $branches
+  do
+    read -p "Continue deleting branch $branch_name (y/n)?" choice
+    case "$choice" in
+      y|Y ) git branch -d $branch_name; git push --delete origin $branch_name;;
+      n|N ) echo "skipping this branch";;
+    esac
+  done
+
+  #| xargs -n 1 -I % sh -c 'git branch -d %; git push --delete origin %'
+}
+
+# Remove all unused docker containers
+function dclean() {
+    sudo docker rm -f $(sudo docker ps -a -q)
+}
+
+# Show an ip of an ec2 instance identified by it's "Name" tag
+function ec2ip() {
+  echo $(aws ec2 describe-instances \
+    --filters \
+      "{\"Name\":\"tag:Name\", \"Values\":[\"$1\"]}" \
+      "{\"Name\":\"instance-state-name\", \"Values\":[\"running\"]}" \
+    --query='Reservations[0].Instances[0].PublicIpAddress' | tr -d '"')
+}
+
+# Fix for Dell latitude's 7440 brightness issue
+function brg() {
+    echo 550 | sudo tee /sys/class/backlight/intel_backlight/brightness
+}
+
+# Extra many types of compressed packages
+# Credit: http://nparikh.org/notes/zshrc.txt
+extract() {
+  if [ -f "$1" ]; then
+    case "$1" in
+      *.tar.bz2)  tar -jxvf "$1"                        ;;
+      *.tar.gz)   tar -zxvf "$1"                        ;;
+      *.bz2)      bunzip2 "$1"                          ;;
+      *.dmg)      hdiutil mount "$1"                    ;;
+      *.gz)       gunzip "$1"                           ;;
+      *.tar)      tar -xvf "$1"                         ;;
+      *.tbz2)     tar -jxvf "$1"                        ;;
+      *.tgz)      tar -zxvf "$1"                        ;;
+      *.zip)      unzip "$1"                            ;;
+      *.ZIP)      unzip "$1"                            ;;
+      *.pax)      cat "$1" | pax -r                     ;;
+      *.pax.Z)    uncompress "$1" --stdout | pax -r     ;;
+      *.Z)        uncompress "$1"                       ;;
+      *) echo "'$1' cannot be extracted/mounted via extract()" ;;
+    esac
+  else
+     echo "'$1' is not a valid file to extract"
+  fi
+}
+
+# Determine size of a file or total size of a directory
+function fs() {
+	if du -b /dev/null > /dev/null 2>&1; then
+		local arg=-sbh;
+	else
+		local arg=-sh;
+	fi
+	if [[ -n "$@" ]]; then
+		sudo du $arg -- "$@";
+	else
+		sudo du $arg .[^.]* *;
+	fi;
+}
+
+# Generate a random and strong password
+function genpass() {
+  date +%s | sha256sum | base64 | head -c 32 ; echo
+}
+
+# Print http headers using tcpdump and some sed voodoo
+function tcpdump_http() {
+  local port="$1"
+  sudo tcpdump -A -s 10240 "tcp port ${port} and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)" | egrep --line-buffered "^........(GET |HTTP\/|POST |HEAD )|^[A-Za-z0-9-]+: " | sed -r 's/^........(GET |HTTP\/|POST |HEAD )/\n\1/g'
+}
+

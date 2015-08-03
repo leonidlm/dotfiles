@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+#
+# This file contains the default (global) env variables. It is beeing sourced
+# before all the topical *.zsh files which can override some of the values
+# set here.
+
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+# Path to the zsh installation folder
+export ZSH=$HOME/.oh-my-zsh
+export DOTFILES_ROOT=$HOME/.dotfiles
+
+# Enable 256 colors
+export TERM=xterm-256color
+
+# Set name of the theme to load.
+# Look in ~/.oh-my-zsh/themes/
+# Optionally, if you set this to "random", it'll load a random theme each
+# time that oh-my-zsh is loaded.
+export ZSH_THEME="mh"
+
+# Will display red dots whilst waiting for completion.
+export COMPLETION_WAITING_DOTS="true"
+
+# You may need to manually set your language environment
+export LANG=en_US.UTF-8
+
+# Compilation flags
+export ARCHFLAGS="-arch x86_64"
+

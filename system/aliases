@@ -1,0 +1,21 @@
+# General
+alias _="sudo"
+alias g="git"
+alias v="vim"
+alias rr="rm -rf"
+alias json="json -c"
+alias week="date +%V"
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+
+# Easy cd navigation
+alias ..="cd .."
+alias ..2="cd ../.."
+alias ..3="cd ../../.."
+alias ..4="cd ../../../.."
+alias ..5="cd ../../../../.."
+
+# Git related
+alias gall='git add -A :/'
+

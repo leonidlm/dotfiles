@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+readonly ZSH_BIN=/bin/zsh
+readonly CONFIGURED_SHELL=$(getent passwd $(id -un) | awk -F : '{print $NF}')
+
+# Install the latest version of zsh
+[ ! -f "$ZSH_BIN" ] && sudo apt-get -y install zsh
+
+[ "$CONFIGURED_SHELL" != "$ZSH_BIN" ] && chsh -s /bin/zsh
+
+# Install oh-my-zsh manually, this will prevent oh-my-zsh to overwrite the
+# .zshrc file.
+[ ! -d "$HOME/.oh-my-zsh" ] && \
+	git clone git://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
+
+exit 0
+

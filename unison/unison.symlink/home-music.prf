@@ -1,0 +1,12 @@
+# Unison preferences
+label = Music shared between all pcs at home
+root = /home/leonid/Music
+root = ssh://leonid@10.0.0.2//home/leonid/Music
+sshargs = -C
+
+# Advanced configuration
+auto = true
+batch = true
+confirmbigdeletes = true
+log = true
+

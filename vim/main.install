@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+readonly VIM_HOME=~/.vim
+
+sudo apt-get -y install vim x-clip
+
+# Install vundle package manager
+if [ ! -d "$VIM_HOME/bundle/vundle" ]; then
+	git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+
+	# Install all the defined vim plugins using vundle
+	vim +PluginInstall +qall
+fi
+
+exit 0
+

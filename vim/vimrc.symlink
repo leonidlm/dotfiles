@@ -1,0 +1,255 @@
+" ===-------------------------------------------------------------------------
+" VUNDLE
+" ===-------------------------------------------------------------------------
+
+" Enable vundle to load all the extensions
+set nocompatible
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" Theme
+Plugin 'blerins/flattown'
+
+" Make tmux and vim beautiful
+Plugin 'edkolev/tmuxline.vim'
+Plugin 'bling/vim-airline'
+
+" Usability plugins
+Plugin 'kien/ctrlp.vim'
+Plugin 'scrooloose/syntastic'
+Plugin 'MattesGroeger/vim-bookmarks'
+Plugin 'vim-scripts/vimwiki'
+Plugin 'scrooloose/nerdtree'
+Plugin 'pbrisbin/vim-mkdir'
+Plugin 'tpope/vim-surround'
+Plugin 'justinmk/vim-sneak'
+Plugin 'jeffkreeftmeijer/vim-numbertoggle'
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plugin 'tomtom/tcomment_vim'
+
+" Syntax
+Plugin 'ekalinin/Dockerfile.vim'
+Plugin 'robbles/logstash.vim'
+Plugin 'rodjek/vim-puppet'
+Plugin 'Matt-Deacalion/vim-systemd-syntax'
+
+" Lang specific plugins
+Plugin 'fatih/vim-go'
+Plugin 'groenewege/vim-less'
+
+" All of your Plugins must be added before the following line
+call vundle#end()
+filetype plugin indent on
+
+
+" ===-------------------------------------------------------------------------
+" DEFAULTS
+" ===-------------------------------------------------------------------------
+
+" With a map leader it's possible to do extra key combinations
+" like <leader>w saves the current file
+let mapleader = ","
+let g:mapleader = ","
+
+" Color scheme
+set t_Co=256
+colorscheme flattown
+
+" General settings
+set number	  						" Show line numbers
+set nowrap
+set tabstop=2	  					" A tab is 2 spaces
+set smarttab							" make "tab" insert indents instead of tabs at the
+													" beginning of a line
+set expandtab							" By default use spaces instead of tabs
+set backspace=indent,eol,start	" allow backspacing
+		  													" over everything in insert mode
+set autoindent    				" always set autoindenting on
+set copyindent    				" copy the previous indentation on autoindenting
+set number       	 				" always show line numbers
+set shiftwidth=2  				" number of spaces to use for autoindenting
+set shiftround    				" use multiple of shiftwidth when indenting with '<' and '>'
+set showmatch     				" set show matching parenthesis
+set ignorecase    				" ignore case when searching
+set smartcase     				" ignore case if search pattern is all lowercase,
+                  				"    case-sensitive otherwise
+set smarttab      				" insert tabs on the start of a line according to
+                  				"    shiftwidth, not tabstop
+set hlsearch      				" highlight search terms
+set incsearch     				" show search matches as you type
+set history=1000         	" remember more commands and search history
+set undolevels=1000      	" use many muchos levels of undo
+set wildignore=*.swp,*.bak,*.pyc,*.class
+set title                	" change the terminal's title
+set visualbell           	" don't beep
+set noerrorbells         	" don't beep
+set nobackup							" Avoid writing a backup file
+set noswapfile						" Avoid writing a swap file
+set pastetoggle=<F2>			" Toggle paste mode with F2
+set cursorline            " Underline the current line
+
+" Recognize .md files as markdown and automatically crop the line at 80 chars
+" mark. We also turn on spell check and words auto completion.
+au BufRead,BufNewFile *.md setlocal filetype=markdown textwidth=80 spell complete+=kspell
+
+" Always center the screen on cursor
+set so=999
+
+" Center screen on current line
+nmap <space> zz
+
+" Pathogen setup
+" execute pathogen#infect()
+" syntax on
+" filetype plugin indent on
+
+" Ruler setup
+set ruler
+set colorcolumn=80
+
+" Specific configuration per file type
+autocmd FileType python,sh :setlocal noexpandtab nosmarttab
+
+" Clear the search buffer on ,/
+nmap <silent> ,/ :nohlsearch<CR>
+
+" Map the keys to easily switch between tabs
+map <C-S-Left> <Esc>:tabprev<CR>
+map <C-S-Right> <Esc>:tabnext<CR>
+map ,t <Esc>:tabnew<CR>
+
+" Map the keys to switch easily between panes
+map <C-Down> <C-W>j
+map <C-Up> <C-W>k
+map <C-left> <C-W>h
+map <C-right> <C-W>l
+
+" Map a key to copy the visual block into a clipboard
+vmap <C-c> y:call system("xclip -i -selection clipboard", getreg("\""))<CR>:call system("xclip -i", getreg("\""))<CR>
+
+" Eplorer mode (NERDTree substitution)
+map ,k :Explore<CR>
+let g:netrw_liststyle=3
+
+" Turn spell check on/off on F6
+" Use [s ]s to naviage between the wrongly spelled words
+" Use z= to show all the available options for a word
+:map <F6> :setlocal spell! spelllang=en_us<CR>
+
+" Turn modeline on, this will allow setting individual file syntax using
+" a small metadata at the top of a file
+set modeline
+set modelines=5
+
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
+
+" Toggle spellcheck with F5
+map <F5> :setlocal spell! spelllang=en_us<CR>
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - SYNTATIC
+" ===-------------------------------------------------------------------------
+
+" Syntatic plugin setting
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+nnoremap <C-w>E :SyntasticCheck<CR> :SyntasticToggleMode<CR>
+
+let g:syntastic_puppet_puppetlint_args="--error-level error"
+
+" Toggle syntatic pane
+" function! ToggleErrors()
+"     let old_last_winnr = winnr('$')
+"     lclose
+"     if old_last_winnr == winnr('$')
+"         " Nothing was closed, open syntastic error location panel
+"         Errors
+"     endif
+" endfunction
+" nnoremap <silent> <C-e> :<C-u>call ToggleErrors()<CR>
+
+" Toggle syntatic errors
+function! ToggleErrors()
+    let old_last_winnr = winnr('$')
+    lclose
+    if old_last_winnr == winnr('$')
+        " Nothing was closed, open syntastic error location panel
+        Errors
+    endif
+endfunction
+nnoremap <silent> <C-e> :<C-u>call ToggleErrors()<CR>
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - CTRL-P
+" ===-------------------------------------------------------------------------
+" Ctr-p plugin configuration
+let g:ctrlp_working_path_mode=0
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-BOOKMARKS
+" ===-------------------------------------------------------------------------
+" vim-bookmarks configuration
+let g:bookmark_highlight_lines=0
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-AIRLINE
+" ===-------------------------------------------------------------------------
+" Vim airline features
+set laststatus=2
+let g:airline#extensions#tabline#enabled = 1
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIMWIKI
+" ===-------------------------------------------------------------------------
+" Vim wiki features
+let g:vimwiki_list = [{'path': '~/Secure/vimwiki','syntax': 'markdown', 'ext': '.md'}]
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-INSTANT-MARKDOWN
+" ===-------------------------------------------------------------------------
+" Preview markdown documents in a browser
+" (https://github.com/suan/vim-instant-markdown)
+" Thie setting disables automatic load of the browser window. Use
+" :InstantMarkdownPreview command to preview manually.
+let g:instant_markdown_autostart = 0
+
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-NERDTREE
+" ===-------------------------------------------------------------------------
+" Tree explorer plugin for vim
+"
+map <C-n> :NERDTreeToggle<CR>
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-NUMBERTOGGLE
+" ===-------------------------------------------------------------------------
+" Smart toggling between relative and normal line numbers
+"
+let g:NumberToggleTrigger="<F2>"
+
+" ===-------------------------------------------------------------------------
+" PLUGINS - VIM-TCOMMENT
+" ===-------------------------------------------------------------------------
+" Easily toggle between commenting in/out a selected visual block
+"
+map <leader>c <c-_><c-_>
+

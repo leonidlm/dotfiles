@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+# Source all the topical files
+for file in $(find -H "$DOTFILES_ROOT" -mindepth 2 -name '*.zsh')
+do
+  source $file
+done
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
+
+# Allow forward-search-history using the CRTL-S key binding
+stty -ixon
+
+# Load the oh-my-zsh bootstrap script
+source $ZSH/oh-my-zsh.sh
+

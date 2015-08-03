@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Install common software (stuff I use frequently)
+sudo apt-get install -y gnome-alsamixer banshee
+

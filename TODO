@@ -1,0 +1,7 @@
+## Things to add to the dotfiles at a later stage
+
+1. Save the ~/.vim/spell/\* folder for all my spell corrections
+2. Save banshee music player's database (so I wont loose my playlists)
+3. Improve the way I work with ecryptfs (use encrypted disk and leave ecryptfs
+   to ubuntu defaults)
+

@@ -1,0 +1,7 @@
+Host *rvzr.net
+  IdentityFile ~/.keys/leonid_rsa
+  User leonidmi
+Host *
+  ServerAliveInterval 120
+  IdentityFile ~/.keys/leonid_rsa
+

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -e
+
+readonly POWERLINE_FONTS_DIR=$HOME/.powerline-fonts
+readonly DEFAULT_GTERM_PROFILE=/apps/gnome-terminal/profiles/Default
+readonly POWERLINE_FONT="Ubuntu Mono derivative Powerline 14"
+
+readonly BC="#000000000000"
+readonly FG="#ffffff"
+readonly BG="#262626"
+
+sudo apt-get -y install tmux dconf-cli
+
+# Install powerline fonts (used by tmuxline and vim-airline projects) and
+# setup gnome terminal colors.
+if [ ! -d "$POWERLINE_FONTS_DIR" ]; then
+	git clone https://github.com/powerline/fonts.git $POWERLINE_FONTS_DIR
+
+	$POWERLINE_FONTS_DIR/install.sh
+
+	# Use the patched fonts instead of the default "Ubuntu Mono"
+	gconftool-2 -s -t bool $DEFAULT_GTERM_PROFILE/use_system_font false
+	gconftool-2 -s -t string $DEFAULT_GTERM_PROFILE/font "$POWERLINE_FONT"
+
+	# Change the default terminal colors so the terminal will look better with
+	# the vim `flatten` theme
+	gconftool-2 -s -t string $DEFAULT_GTERM_PROFILE/bold_color $BC
+	gconftool-2 -s -t string $DEFAULT_GTERM_PROFILE/background_color $BG
+	gconftool-2 -s -t string $DEFAULT_GTERM_PROFILE/foreground_color $FG
+	gconftool-2 -s -t bool $DEFAULT_GTERM_PROFILE/use_theme_colors false
+	gconftool-2 -s -t bool $DEFAULT_GTERM_PROFILE/bold_color_same_as_fg true
+fi
+
+exit 0
+

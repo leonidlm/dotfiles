@@ -1,0 +1,16 @@
+[user]
+        email = leonidlm@gmail.com
+        name = Leonid Mirsky
+[push]
+        default = simple
+[core]
+        editor = vim
+[alias]
+        s = status
+        c = commit
+        b = branch
+        p = pull
+        lg = log
+        r = remote
+        unstage = reset
+

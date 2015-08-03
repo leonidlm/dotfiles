@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# This script is executed only once to preperly setup the dotfiles
+
+set -e
+
+cd "$(dirname "$0")/.."
+DOTFILES_ROOT=$(pwd)
+
+echo ''
+
+info() {
+	printf "  [ \033[00;34mINFO\033[0m ] $1\n"
+}
+
+fail() {
+	printf "\r\033[2K  [ \033[0;31mfail\033[0m ] $1\n"
+	exit 1
+}
+
+prerequisites() {
+	info "Installing ubuntu deps"
+	sh -e -c $DOTFILES_ROOT/scripts/ubuntu-deps
+}
+
+symlink() {
+	for src in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.symlink')
+	do
+		dst="$HOME/.$(basename "${src%.*}")"
+		info "Creating a sym link from $src to $dst"
+		ln -svf "$src" "$dst"
+	done
+}
+
+install() {
+	# find the installers and run them iteratively
+	for installer in $(find -H "$DOTFILES_ROOT" -maxdepth 2 -name '*.install')
+	do
+		info "Running installer $installer"
+		sh -e -c "${installer}" && \
+			info "Finished running installed $installer" || \
+			fail "Failed running installer $installer"
+	done
+}
+
+prerequisites
+symlink
+install
+
